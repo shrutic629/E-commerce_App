@@ -1,0 +1,24 @@
+const express = require('express');
+const dotenv = require('dotenv').config()
+const connectDB = require('./config/db.js')
+const errorHandler = require('./middleware/errorHandler')
+
+const app = express();
+const PORT = process.env.PORT || 3000
+
+app.use(express.json())
+
+connectDB()
+
+const customerRoutes = require('./routes/customerRoutes.js')
+app.use('/api/customers',customerRoutes)
+
+app.get('/', (req, res) => {
+    res.send('API is running...');
+  });
+
+app.use(errorHandler)
+
+app.listen(PORT,()=>{
+    console.log(`app is listening on port ${PORT}`)
+})
