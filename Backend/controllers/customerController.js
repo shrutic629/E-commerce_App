@@ -161,18 +161,29 @@ exports.forgotPassword = async(req,res,next)=>{
 
 exports.resetPassword = async(req,res,next)=>{
     // get data from req.body(otp,email,password)
+    const {otp,email,password} = req.body
 
     // check for all fields
+    if(!(otp && email && password)){
+        return res.status(400).json({message:'All fields are required'})
+    }
 
     // find existingCustomer
-
-    // compare otp to otpmodel
+    const existingCustomer = await Otp.findOne({otp,email})
+    if(!existingCustomer){
+        return res.status(400).json({message:'Email having otp doesnt exist'})
+    }
 
     // check otpexpiry
+    if(existingCustomer.otpExpiry < new Date()){
+        return res.status(400).json({message:'Otp expired'})
+    }
 
     // add password in existingCustomer and save
+    existingCustomer.password = password
+    await existingCustomer.save()
 
     // send response
-
+    res.status(200).json({message:'Password reset successfully'})
 
 }
