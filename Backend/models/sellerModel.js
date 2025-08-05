@@ -27,6 +27,7 @@ const sellerSchema = new mongoose.Schema({
     password:{
         type:String,
         required:[true,'Password is required'],
+        select:false,
         validate: {
             validator: function (value) {
                 return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/.test(value);
