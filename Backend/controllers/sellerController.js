@@ -4,6 +4,7 @@ const Otp =require('../models/otpModel')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
 const bcrypt = require('bcrypt')
+const generateAndSendOtp = require('../services/otpService')
 
 exports.signUp = async(req,res,next)=>{
     try{
@@ -97,7 +98,28 @@ exports.login = async(req,res,next)=>{
 
 exports.forgotPassword = async(req,res,next)=>{
     try{
+        const {email} = req.body;
 
+        if(!email){
+            return res.status(400).json({message:"Email is required"})
+        }
+
+        const existingSeller = await Seller.findOne({email})
+        if(!existingSeller){
+            return res.status(400).json({message:"Seller doesnt exist"})
+        }
+
+        await generateAndSendOtp({
+            purpose:"forgotPassword",
+            userType:"Seller",
+            userId:existingSeller._id,
+            mode:'email',
+            phoneCountryCode:null,
+            phoneNumber:null,
+            email:email
+        })
+
+        res.status(200).json({message:'Otp sent successfully'})
     }
     catch(err){
         next(err)
@@ -106,6 +128,30 @@ exports.forgotPassword = async(req,res,next)=>{
 
 exports.resetPassword = async(req,res,next)=>{
     try{
+        const {email,otp,password} = req.body
+
+        if(!email || !otp || !password){
+            return res.status(400).json({message:"All fields are required"})
+        }
+
+        const otpwithEmail = await Otp.findOne({otp,email})
+        if(!otpwithEmail){
+            return res.status(400).json({message:"Otp not found"})
+        }
+
+        if(Date.now() > otpwithEmail.otpExpiry ){
+            return res.status(400).json({message:"Otp expired"})
+        }
+
+        const existingseller = await Seller.findOne({email})
+        if(!existingseller){
+            return res.status(400).json({message:"Seller doesnt exist"})
+        }
+
+        existingseller.password = password
+        await existingseller.save()
+
+        res.status(200).json({message:"Password reset successfully"})
 
     }
     catch(err){

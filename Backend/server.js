@@ -13,8 +13,8 @@ connectDB()
 const customerRoutes = require('./routes/customerRoutes.js')
 app.use('/api/customers',customerRoutes)
 
-// const sellerRoutes = require('./routes/sellerRoutes.js')
-// app.use('/api/sellers',sellerRoutes)
+const sellerRoutes = require('./routes/sellerRoutes.js')
+app.use('/api/sellers',sellerRoutes)
 
 app.get('/', (req, res) => {
     res.send('API is running...');
