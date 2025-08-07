@@ -16,6 +16,9 @@ app.use('/api/customers',customerRoutes)
 const sellerRoutes = require('./routes/sellerRoutes.js')
 app.use('/api/sellers',sellerRoutes)
 
+// const productRoutes = require('./routes/productRoutes')
+// app.use('/api/products',productRoutes)
+
 app.get('/', (req, res) => {
     res.send('API is running...');
   });
