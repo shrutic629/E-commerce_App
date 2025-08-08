@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv').config()
 const connectDB = require('./config/db.js')
 const errorHandler = require('./middleware/errorHandler')
+const fileUpload = require('express-fileupload')
 
 const app = express();
 const PORT = process.env.PORT || 3000
@@ -9,6 +10,11 @@ const PORT = process.env.PORT || 3000
 app.use(express.json())
 
 connectDB()
+
+app.use(fileUpload({
+  useTempFiles : true,
+  tempFileDir : '/tmp/'
+}));
 
 const customerRoutes = require('./routes/customerRoutes.js')
 app.use('/api/customers',customerRoutes)
